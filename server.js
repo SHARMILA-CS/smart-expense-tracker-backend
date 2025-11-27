@@ -9,7 +9,7 @@ const app = express();
 app.get("/_health", (req, res) => res.json({ status: "ok" }));
 
 
-const cors = require("cors");
+
 
 // Allow deployed frontend (Netlify) to access backend
 app.use(cors({
