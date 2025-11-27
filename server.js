@@ -9,40 +9,20 @@ const app = express();
 app.get("/_health", (req, res) => res.json({ status: "ok" }));
 
 
-// ✅ CORS middleware
+const cors = require("cors");
+
+// Allow deployed frontend (Netlify) to access backend
 app.use(cors({
-  origin: 'http://127.0.0.1:8080',                  // frontend URL
-  methods: ['GET','POST','PUT','DELETE','OPTIONS'], // allow all methods
-  allowedHeaders: ['Content-Type','Authorization'], // headers frontend may send
+  origin: "https://sunny-cucurucho-93ff97.netlify.app", // your Netlify URL
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"],
   credentials: true
 }));
 
-// ✅ Handle preflight OPTIONS requests
-app.options('*', cors({
-  origin: 'http://127.0.0.1:8080',
-  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization'],
+// Handle preflight requests
+app.options("*", cors({
+  origin: "https://sunny-cucurucho-93ff97.netlify.app",
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"],
   credentials: true
 }));
-
-// Parse JSON
-app.use(express.json());
-
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ MongoDB connected'))
-  .catch(err => console.log(err));
-
-// Routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/expenses', require('./routes/expenseRoutes'));
-app.use('/api/budget', require('./routes/budgetRoutes'));
-
-// Start server
-const PORT = process.env.PORT || 5000;
-
-app.get('/api/health', (req, res) => {
-  res.json({ message: 'Backend is running successfully!' });
-});
-
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
